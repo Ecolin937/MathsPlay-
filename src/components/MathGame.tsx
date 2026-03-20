@@ -64,7 +64,15 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
       setFeedback('wrong');
       
       if (question) {
-        setAiExplanation(`La bonne réponse était ${question.answer}. Continue d'essayer ! 💪`);
+        setIsExplaining(true);
+        try {
+          const explanation = await explainMathError(question, selected, grade);
+          setAiExplanation(explanation);
+        } catch (error) {
+          setAiExplanation(`La bonne réponse était ${question.answer}. Continue d'essayer ! 💪`);
+        } finally {
+          setIsExplaining(false);
+        }
       }
     }
   };
@@ -85,28 +93,28 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
         <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)] border border-primary/50">
           <Trophy className="w-12 h-12 text-primary" />
         </div>
-        <h2 className="text-4xl font-display mb-2 text-white">Session terminée !</h2>
-        <p className="text-slate-400 mb-8 text-lg">{message}</p>
+        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white">Session terminée !</h2>
+        <p className="text-slate-400 mb-8 text-base md:text-lg">{message}</p>
         
-        <div className="glass-card border-primary/20 rounded-[2.5rem] p-10 mb-8 w-full max-w-xs relative overflow-hidden">
+        <div className="glass-card border-primary/20 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-8 w-full max-w-xs relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary" />
-          <p className="text-xs text-primary uppercase font-bold tracking-[0.3em] mb-4">Note Finale</p>
+          <p className="text-[10px] text-primary uppercase font-bold tracking-[0.3em] mb-4">Note Finale</p>
           <div className="flex items-baseline justify-center gap-1">
-            <span className="text-8xl font-display text-white">{finalGrade}</span>
-            <span className="text-2xl font-display text-slate-500">/ 20</span>
+            <span className="text-6xl md:text-8xl font-display text-white">{finalGrade}</span>
+            <span className="text-xl md:text-2xl font-display text-slate-500">/ 20</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-12">
-          <div className="glass-card p-6 rounded-3xl border-white/5">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Précision</p>
-            <p className="text-3xl font-display text-accent">
+          <div className="glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl border-white/5">
+            <p className="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Précision</p>
+            <p className="text-2xl md:text-3xl font-display text-accent">
               {Math.round((stats.correctAnswers / TOTAL_QUESTIONS) * 100)}%
             </p>
           </div>
-          <div className="glass-card p-6 rounded-3xl border-white/5">
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Meilleure Série</p>
-            <p className="text-3xl font-display text-secondary">{stats.bestStreak}</p>
+          <div className="glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl border-white/5">
+            <p className="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Meilleure Série</p>
+            <p className="text-2xl md:text-3xl font-display text-secondary">{stats.bestStreak}</p>
           </div>
         </div>
 
@@ -123,20 +131,20 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
 
   return (
     <div className="max-w-3xl mx-auto w-full">
-      <div className="flex items-center justify-between mb-12">
-        <button onClick={onBack} className="p-3 hover:bg-white/10 rounded-2xl transition-colors text-slate-400">
-          <ArrowLeft className="w-6 h-6" />
+      <div className="flex items-center justify-between mb-8 md:mb-12">
+        <button onClick={onBack} className="p-2 md:p-3 hover:bg-white/10 rounded-xl md:rounded-2xl transition-colors text-slate-400">
+          <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-6">
           <div className="text-right">
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Question</p>
-            <p className="text-2xl font-display text-white">{stats.totalQuestions + 1} <span className="text-slate-600 text-sm">/ {TOTAL_QUESTIONS}</span></p>
+            <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Question</p>
+            <p className="text-xl md:text-2xl font-display text-white">{stats.totalQuestions + 1} <span className="text-slate-600 text-xs md:text-sm">/ {TOTAL_QUESTIONS}</span></p>
           </div>
-          <div className="w-px h-8 bg-white/10" />
+          <div className="w-px h-6 md:h-8 bg-white/10" />
           <div className="text-left">
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Score</p>
-            <p className="text-2xl font-display text-primary">{stats.score}</p>
+            <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Score</p>
+            <p className="text-xl md:text-2xl font-display text-primary">{stats.score}</p>
           </div>
         </div>
       </div>
@@ -155,7 +163,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
           )}
         </AnimatePresence>
 
-        <div className="glass-card rounded-[3.5rem] p-16 text-center relative overflow-hidden border-white/5">
+        <div className="glass-card rounded-2xl md:rounded-[3.5rem] p-8 md:p-16 text-center relative overflow-hidden border-white/5">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-50" />
           <AnimatePresence mode="wait">
             <motion.div
@@ -165,8 +173,8 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
               exit={{ opacity: 0, y: -20 }}
               className="relative z-10"
             >
-              <span className="text-xs font-bold text-primary uppercase tracking-[0.4em] mb-6 block opacity-60">Calcul en cours</span>
-              <h3 className="text-7xl md:text-9xl font-display tracking-tighter text-white">
+              <span className="text-[10px] md:text-xs font-bold text-primary uppercase tracking-[0.4em] mb-4 md:mb-6 block opacity-60">Calcul en cours</span>
+              <h3 className="text-5xl md:text-9xl font-display tracking-tighter text-white">
                 {question?.text}
               </h3>
             </motion.div>
@@ -196,7 +204,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
         {question?.options.map((option, idx) => (
           <motion.button
             key={`${question.id}-${idx}`}
@@ -205,7 +213,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
             onClick={() => handleAnswer(option)}
             disabled={!!feedback || isExplaining}
             className={`
-              p-8 rounded-[2rem] text-4xl font-display transition-all border
+              p-6 md:p-8 rounded-xl md:rounded-[2rem] text-2xl md:text-4xl font-display transition-all border
               ${feedback === 'correct' && option === question.answer ? 'bg-accent/20 text-accent border-accent shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 
                 feedback === 'wrong' && option === question.answer ? 'bg-accent/20 text-accent border-accent' :
                 feedback === 'wrong' && option === (question.options.find(o => o === option)) ? 'bg-rose-500/20 text-rose-500 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.2)]' :
@@ -223,28 +231,28 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
-            className="mt-12 glass-card p-10 rounded-[3rem] border-primary/20 relative overflow-hidden"
+            className="mt-8 md:mt-12 glass-card p-6 md:p-10 rounded-2xl md:rounded-[3rem] border-primary/20 relative overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-            <div className="flex items-start gap-6">
-              <div className="bg-primary/20 p-4 rounded-2xl border border-primary/30">
+            <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+              <div className="bg-primary/20 p-3 md:p-4 rounded-xl md:rounded-2xl border border-primary/30">
                 {isExplaining ? (
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <Loader2 className="w-6 h-6 md:w-8 md:h-8 text-primary animate-spin" />
                 ) : (
-                  <BrainCircuit className="w-8 h-8 text-primary" />
+                  <BrainCircuit className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                 )}
               </div>
               <div className="flex-1">
-                <h4 className="font-display text-xl mb-3 text-white">
+                <h4 className="font-display text-lg md:text-xl mb-2 md:mb-3 text-white">
                   Assistant MathOS
                 </h4>
-                <div className="text-slate-400 leading-relaxed text-lg">
+                <div className="text-slate-400 leading-relaxed text-base md:text-lg">
                   {aiExplanation}
                 </div>
                 {aiExplanation && (
                   <button 
                     onClick={nextQuestion}
-                    className="mt-8 bg-primary/10 text-primary px-8 py-3 rounded-xl font-bold text-sm flex items-center gap-3 hover:bg-primary/20 transition-colors"
+                    className="mt-6 md:mt-8 bg-primary/10 text-primary px-6 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm flex items-center gap-3 hover:bg-primary/20 transition-colors"
                   >
                     Reprendre la simulation <ArrowLeft className="w-4 h-4 rotate-180" />
                   </button>

@@ -100,25 +100,25 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
   const pairCount = difficulty === 'easy' ? 4 : difficulty === 'medium' ? 6 : 8;
 
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center">
-      <div className="w-full max-w-4xl flex items-center justify-between mb-8">
-        <button onClick={onBack} className="p-3 glass rounded-2xl hover:bg-white/10 transition-all text-white">
-          <ArrowLeft className="w-6 h-6" />
+    <div className="min-h-screen p-2 md:p-8 flex flex-col items-center">
+      <div className="w-full max-w-4xl flex items-center justify-between mb-4 md:mb-8">
+        <button onClick={onBack} className="p-2 md:p-3 glass rounded-xl md:rounded-2xl hover:bg-white/10 transition-all text-white">
+          <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
-        <div className="flex gap-4">
-          <div className="glass px-6 py-3 rounded-2xl text-white font-bold">
+        <div className="flex gap-2 md:gap-4">
+          <div className="glass px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-base">
             Coups: {moves}
           </div>
-          <div className="glass px-6 py-3 rounded-2xl text-white font-bold">
+          <div className="glass px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-base">
             Paires: {matches}/{pairCount}
           </div>
         </div>
-        <button onClick={initializeGame} className="p-3 glass rounded-2xl hover:bg-white/10 transition-all text-white">
-          <RefreshCw className="w-6 h-6" />
+        <button onClick={initializeGame} className="p-2 md:p-3 glass rounded-xl md:rounded-2xl hover:bg-white/10 transition-all text-white">
+          <RefreshCw className="w-5 h-5 md:w-6 md:h-6" />
         </button>
       </div>
 
-      <div className={`grid gap-4 w-full max-w-4xl ${
+      <div className={`grid gap-2 md:gap-4 w-full max-w-4xl ${
         difficulty === 'easy' ? 'grid-cols-2 sm:grid-cols-4' : 
         difficulty === 'medium' ? 'grid-cols-3 sm:grid-cols-4' : 
         'grid-cols-4'
@@ -135,12 +135,12 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
               card.isFlipped || card.isMatched ? 'rotate-y-180' : ''
             }`}>
               {/* Front */}
-              <div className="absolute inset-0 glass rounded-3xl flex items-center justify-center backface-hidden border-2 border-white/10">
-                <Brain className="w-12 h-12 text-primary/30" />
+              <div className="absolute inset-0 glass rounded-2xl md:rounded-3xl flex items-center justify-center backface-hidden border-2 border-white/10">
+                <Brain className="w-8 h-8 md:w-12 md:h-12 text-primary/30" />
               </div>
               {/* Back */}
-              <div className="absolute inset-0 bg-primary/20 backdrop-blur-xl rounded-3xl flex items-center justify-center rotate-y-180 backface-hidden border-2 border-primary/50 p-4 text-center">
-                <span className="text-white font-bold text-lg md:text-xl">{card.content}</span>
+              <div className="absolute inset-0 bg-primary/20 backdrop-blur-xl rounded-2xl md:rounded-3xl flex items-center justify-center rotate-y-180 backface-hidden border-2 border-primary/50 p-2 md:p-4 text-center">
+                <span className="text-white font-bold text-sm md:text-xl break-words">{card.content}</span>
               </div>
             </div>
           </motion.div>
@@ -154,15 +154,15 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
             animate={{ opacity: 1, scale: 1 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xl"
           >
-            <div className="glass-card p-12 rounded-[3rem] text-center max-w-md w-full">
-              <div className="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Trophy className="w-12 h-12 text-accent" />
+            <div className="glass-card p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] text-center max-w-md w-full">
+              <div className="w-16 h-16 md:w-24 md:h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <Trophy className="w-8 h-8 md:w-12 md:h-12 text-accent" />
               </div>
-              <h2 className="text-4xl font-display text-white mb-4">Bravo !</h2>
-              <p className="text-slate-400 mb-8">Tu as trouvé toutes les paires en {moves} coups.</p>
+              <h2 className="text-3xl md:text-4xl font-display text-white mb-2 md:mb-4">Bravo !</h2>
+              <p className="text-slate-400 mb-6 md:mb-8 text-sm md:text-base">Tu as trouvé toutes les paires en {moves} coups.</p>
               <button
                 onClick={initializeGame}
-                className="w-full py-4 bg-primary text-white rounded-2xl font-bold hover:scale-105 transition-all"
+                className="w-full py-3 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold hover:scale-105 transition-all text-sm md:text-base"
               >
                 Rejouer
               </button>

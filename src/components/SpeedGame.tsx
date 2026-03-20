@@ -78,23 +78,23 @@ export const SpeedGame: React.FC<SpeedGameProps> = ({ difficulty, grade, operati
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }} 
         animate={{ opacity: 1, scale: 1 }} 
-        className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6"
+        className="flex flex-col items-center justify-center min-h-[50vh] md:min-h-[60vh] text-center p-4 md:p-6"
       >
-        <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)] border border-primary/50">
-          <Trophy className="w-12 h-12 text-primary" />
+        <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/20 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)] border border-primary/50">
+          <Trophy className="w-8 h-8 md:w-12 md:h-12 text-primary" />
         </div>
-        <h2 className="text-4xl font-display mb-2 text-white">Vitesse Éclair !</h2>
-        <p className="text-slate-400 mb-8 text-lg">Traitement des données terminé.</p>
+        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white">Vitesse Éclair !</h2>
+        <p className="text-slate-400 mb-6 md:mb-8 text-base md:text-lg">Traitement des données terminé.</p>
         
-        <div className="glass-card border-primary/20 rounded-[2.5rem] p-10 mb-12 w-full max-w-xs relative overflow-hidden">
+        <div className="glass-card border-primary/20 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 mb-8 md:mb-12 w-full max-w-xs relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary" />
-          <p className="text-xs text-primary uppercase font-bold tracking-[0.3em] mb-4">Score Final</p>
-          <p className="text-7xl font-display text-white">{score}</p>
+          <p className="text-[10px] md:text-xs text-primary uppercase font-bold tracking-[0.3em] mb-2 md:mb-4">Score Final</p>
+          <p className="text-5xl md:text-7xl font-display text-white">{score}</p>
         </div>
 
         <button 
           onClick={onBack} 
-          className="group relative px-12 py-4 bg-primary text-white rounded-2xl font-bold text-lg overflow-hidden transition-all hover:scale-105 active:scale-95"
+          className="group relative px-8 md:px-12 py-3 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold text-base md:text-lg overflow-hidden transition-all hover:scale-105 active:scale-95"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           Retour au Menu
@@ -104,24 +104,24 @@ export const SpeedGame: React.FC<SpeedGameProps> = ({ difficulty, grade, operati
   }
 
   return (
-    <div className="max-w-xl mx-auto w-full">
-      <div className="flex justify-between items-center mb-12">
-        <button onClick={onBack} className="p-3 hover:bg-white/10 rounded-2xl transition-colors text-slate-400">
-          <ArrowLeft className="w-6 h-6" />
+    <div className="max-w-xl mx-auto w-full px-4 md:px-0">
+      <div className="flex justify-between items-center mb-6 md:mb-12">
+        <button onClick={onBack} className="p-2 md:p-3 hover:bg-white/10 rounded-xl md:rounded-2xl transition-colors text-slate-400">
+          <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
-        <div className="flex gap-4">
-          <div className="glass-card px-6 py-2 rounded-full border-white/5 flex items-center gap-3">
-            <Timer className={`w-5 h-5 ${timeLeft < 5 ? 'text-rose-500 animate-pulse' : 'text-primary'}`} />
-            <span className="font-bold text-white text-lg">{timeLeft}s</span>
+        <div className="flex gap-2 md:gap-4">
+          <div className="glass-card px-4 md:px-6 py-1.5 md:py-2 rounded-full border-white/5 flex items-center gap-2 md:gap-3">
+            <Timer className={`w-4 h-4 md:w-5 md:h-5 ${timeLeft < 5 ? 'text-rose-500 animate-pulse' : 'text-primary'}`} />
+            <span className="font-bold text-white text-base md:text-lg">{timeLeft}s</span>
           </div>
-          <div className="glass-card px-6 py-2 rounded-full border-white/5 flex items-center gap-3">
-            <Zap className="w-5 h-5 text-yellow-500" />
-            <span className="font-bold text-white text-lg">{score}</span>
+          <div className="glass-card px-4 md:px-6 py-1.5 md:py-2 rounded-full border-white/5 flex items-center gap-2 md:gap-3">
+            <Zap className="w-4 h-4 md:w-5 md:h-5 text-yellow-500" />
+            <span className="font-bold text-white text-base md:text-lg">{score}</span>
           </div>
         </div>
       </div>
 
-      <div className="glass-card rounded-[3.5rem] p-16 text-center mb-12 min-h-[350px] flex flex-col justify-center relative overflow-hidden border-white/5">
+      <div className="glass-card rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-16 text-center mb-6 md:mb-12 min-h-[250px] md:min-h-[350px] flex flex-col justify-center relative overflow-hidden border-white/5">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-50" />
         <AnimatePresence mode="wait">
           <motion.div
@@ -130,9 +130,9 @@ export const SpeedGame: React.FC<SpeedGameProps> = ({ difficulty, grade, operati
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <span className="text-xs font-bold text-primary uppercase tracking-[0.4em] mb-6 block opacity-60">Vérification de donnée</span>
-            <h3 className="text-6xl font-display mb-6 text-white">{currentTask?.text}</h3>
-            <div className="text-7xl font-display text-primary tracking-tighter">
+            <span className="text-[10px] md:text-xs font-bold text-primary uppercase tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 block opacity-60">Vérification de donnée</span>
+            <h3 className="text-4xl md:text-6xl font-display mb-4 md:mb-6 text-white">{currentTask?.text}</h3>
+            <div className="text-5xl md:text-7xl font-display text-primary tracking-tighter">
               = {currentTask?.displayValue}
             </div>
           </motion.div>
@@ -144,29 +144,29 @@ export const SpeedGame: React.FC<SpeedGameProps> = ({ difficulty, grade, operati
             animate={{ scale: 1.5, opacity: 0.2 }} 
             className={`absolute inset-0 flex items-center justify-center pointer-events-none ${feedback === 'correct' ? 'text-accent' : 'text-rose-500'}`}
           >
-            {feedback === 'correct' ? <Check size={150} strokeWidth={3} /> : <X size={150} strokeWidth={3} />}
+            {feedback === 'correct' ? <Check size={100} className="md:w-[150px] md:h-[150px]" strokeWidth={3} /> : <X size={100} className="md:w-[150px] md:h-[150px]" strokeWidth={3} />}
           </motion.div>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-4 md:gap-8">
         <motion.button 
           whileHover={{ scale: 1.05, y: -4 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleChoice(false)}
-          className="bg-rose-500/10 text-rose-500 p-10 rounded-[2.5rem] border border-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.1)] transition-all flex flex-col items-center gap-4 hover:bg-rose-500/20"
+          className="bg-rose-500/10 text-rose-500 p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.1)] transition-all flex flex-col items-center gap-2 md:gap-4 hover:bg-rose-500/20"
         >
-          <X size={48} />
-          <span className="font-bold uppercase tracking-[0.2em] text-sm">Faux</span>
+          <X className="w-8 h-8 md:w-12 md:h-12" />
+          <span className="font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] text-xs md:text-sm">Faux</span>
         </motion.button>
         <motion.button 
           whileHover={{ scale: 1.05, y: -4 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleChoice(true)}
-          className="bg-accent/10 text-accent p-10 rounded-[2.5rem] border border-accent/20 shadow-[0_0_30px_rgba(16,185,129,0.1)] transition-all flex flex-col items-center gap-4 hover:bg-accent/20"
+          className="bg-accent/10 text-accent p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-accent/20 shadow-[0_0_30px_rgba(16,185,129,0.1)] transition-all flex flex-col items-center gap-2 md:gap-4 hover:bg-accent/20"
         >
-          <Check size={48} />
-          <span className="font-bold uppercase tracking-[0.2em] text-sm">Vrai</span>
+          <Check className="w-8 h-8 md:w-12 md:h-12" />
+          <span className="font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] text-xs md:text-sm">Vrai</span>
         </motion.button>
       </div>
     </div>

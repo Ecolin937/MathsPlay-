@@ -5,14 +5,14 @@ import {
   Save, Trash2, Plus, Play, BrainCircuit, Download,
   FileCode, FileEdit, Layout, GraduationCap, Calculator, ArrowRight, BookOpen, Star, Binary, Sparkles, Percent, Sigma, Zap, Trophy as TrophyIcon, Loader2
 } from 'lucide-react';
-import { askMathGuru } from '../services/aiService';
+import { askMathGuru, generateTeacherContent } from '../services/aiService';
 import { Grade } from '../types';
 
 interface AdminPanelProps {
   onClose: () => void;
 }
 
-type AdminTool = 'dashboard' | 'explorer' | 'timer' | 'quiz' | 'word' | 'excel' | 'paint' | 'tools';
+type AdminTool = 'dashboard' | 'explorer' | 'timer' | 'quiz' | 'word' | 'excel' | 'paint' | 'tools' | 'lesson';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [activeTool, setActiveTool] = useState<AdminTool>('dashboard');
@@ -28,28 +28,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [timerMinutes, setTimerMinutes] = useState(60);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerMode, setTimerMode] = useState<'countdown' | 'stopwatch'>('countdown');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isTimerRunning) {
       timerRef.current = setInterval(() => {
-        setTimerSeconds(s => {
-          if (s === 0) {
-            if (timerMinutes === 0) {
-              setIsTimerRunning(false);
+        if (timerMode === 'countdown') {
+          setTimerSeconds(s => {
+            if (s === 0) {
+              if (timerMinutes === 0) {
+                setIsTimerRunning(false);
+                return 0;
+              }
+              setTimerMinutes(m => m - 1);
+              return 59;
+            }
+            return s - 1;
+          });
+        } else {
+          setTimerSeconds(s => {
+            if (s === 59) {
+              setTimerMinutes(m => m + 1);
               return 0;
             }
-            setTimerMinutes(m => m - 1);
-            return 59;
-          }
-          return s - 1;
-        });
+            return s + 1;
+          });
+        }
       }, 1000);
     } else if (timerRef.current) {
       clearInterval(timerRef.current);
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isTimerRunning, timerMinutes]);
+  }, [isTimerRunning, timerMinutes, timerMode]);
 
   // Office State
   const [files, setFiles] = useState<{ id: string, name: string, type: string, content: any }[]>(() => {
@@ -78,16 +89,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [quizPrompt, setQuizPrompt] = useState('');
   const [generatedQuiz, setGeneratedQuiz] = useState('');
   const [quizTopic, setQuizTopic] = useState('fractions');
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
 
-  const quizTemplates: Record<string, string> = {
-    'fractions': "Quiz: Les Fractions (5ème)\n1. Calcule 1/2 + 1/4\n2. Simplifie 10/20\n3. Compare 3/4 et 5/8\n4. Calcule 2/3 * 3/4\n5. Problème: Un gâteau est partagé en 8...",
-    'pythagore': "Quiz: Théorème de Pythagore (4ème)\n1. Énonce le théorème.\n2. ABC est rectangle en A, AB=3, AC=4. Calcule BC.\n3. Comment prouver qu'un triangle n'est pas rectangle ?\n4. Calcule la diagonale d'un carré de côté 5.\n5. Application concrète: Une échelle contre un mur...",
-    'equations': "Quiz: Équations (3ème)\n1. Résous x + 5 = 12\n2. Résous 3x = 21\n3. Résous 2x - 4 = 10\n4. Développe et réduis 3(x + 2)\n5. Problème: Le triple d'un nombre augmenté de 2 est 17...",
-    'proportionalite': "Quiz: Proportionnalité (6ème/5ème)\n1. Si 2kg de pommes coûtent 4€, quel est le prix de 5kg ?\n2. Complète : 10 -> 20, 15 -> 30, 20 -> ?\n3. Une voiture consomme 5L aux 100km. Combien pour 300km ?\n4. Qu'est-ce qu'un coefficient de proportionnalité ?\n5. Échelle : 1cm sur la carte = 1km réel. 5cm = ? km."
+  const loadQuizTemplate = async () => {
+    setIsGeneratingQuiz(true);
+    try {
+      const content = await generateTeacherContent(`Génère un quiz sur le sujet suivant : ${quizTopic}`, 'quiz');
+      setGeneratedQuiz(content);
+    } catch (error) {
+      setGeneratedQuiz("Erreur lors de la génération du quiz.");
+    } finally {
+      setIsGeneratingQuiz(false);
+    }
   };
 
-  const loadQuizTemplate = () => {
-    setGeneratedQuiz(quizTemplates[quizTopic] || "Sélectionnez un sujet valide.");
+  // AI Lesson State
+  const [lessonPrompt, setLessonPrompt] = useState('');
+  const [generatedLesson, setGeneratedLesson] = useState('');
+  const [isGeneratingLesson, setIsGeneratingLesson] = useState(false);
+
+  const generateLesson = async () => {
+    if (!lessonPrompt.trim()) return;
+    setIsGeneratingLesson(true);
+    try {
+      const content = await generateTeacherContent(lessonPrompt, 'lesson');
+      setGeneratedLesson(content);
+    } catch (error) {
+      setGeneratedLesson("Erreur lors de la génération du cours.");
+    } finally {
+      setIsGeneratingLesson(false);
+    }
   };
 
   return (
@@ -102,11 +133,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="bg-primary/20 p-3 rounded-2xl">
-              <Shield className="w-6 h-6 text-primary" />
+              <BrainCircuit className="w-6 h-6 text-primary animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl font-display text-white">Panneau d'Administration</h2>
-              <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Accès Sécurisé • Système Pédagogique</p>
+              <h2 className="text-2xl font-display text-white">Panneau Administratif</h2>
+              <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Système de Gestion Pédagogique</p>
             </div>
           </div>
           <button onClick={onClose} className="p-3 hover:bg-white/10 rounded-2xl transition-all text-slate-400">
@@ -114,32 +145,37 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Global Loading Overlay */}
+          <AnimatePresence>
+          </AnimatePresence>
+
           {/* Sidebar */}
           <div className="w-64 bg-white/5 border-r border-white/5 p-6 space-y-2 hidden md:block overflow-y-auto">
             <SidebarBtn active={activeTool === 'dashboard'} icon={<Layout />} label="Tableau de bord" onClick={() => { setActiveTool('dashboard'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'explorer'} icon={<Download />} label="Explorateur Fichiers" onClick={() => { setActiveTool('explorer'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'timer'} icon={<Timer />} label="Minuteur Éval" onClick={() => { setActiveTool('timer'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'quiz'} icon={<BrainCircuit />} label="Générateur Quiz" onClick={() => { setActiveTool('quiz'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'explorer'} icon={<Download />} label="Archives" onClick={() => { setActiveTool('explorer'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'timer'} icon={<Timer />} label="Chronomètre" onClick={() => { setActiveTool('timer'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'quiz'} icon={<BrainCircuit />} label="Générateur Quiz IA" onClick={() => { setActiveTool('quiz'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'lesson'} icon={<BookOpen />} label="Générateur Cours IA" onClick={() => { setActiveTool('lesson'); setCurrentFile(null); }} />
             <SidebarBtn active={activeTool === 'tools'} icon={<Plus />} label="Outils Prof" onClick={() => { setActiveTool('tools'); setCurrentFile(null); }} />
-            <div className="pt-6 pb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Outils Office</div>
-            <SidebarBtn active={activeTool === 'word'} icon={<FileText />} label="Mini Word" onClick={() => { setActiveTool('word'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'excel'} icon={<Table />} label="Mini Excel" onClick={() => { setActiveTool('excel'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'paint'} icon={<Palette />} label="Mini Paint" onClick={() => { setActiveTool('paint'); setCurrentFile(null); }} />
+            <div className="pt-6 pb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Office</div>
+            <SidebarBtn active={activeTool === 'word'} icon={<FileText />} label="Word" onClick={() => { setActiveTool('word'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'excel'} icon={<Table />} label="Excel" onClick={() => { setActiveTool('excel'); setCurrentFile(null); }} />
+            <SidebarBtn active={activeTool === 'paint'} icon={<Palette />} label="Paint" onClick={() => { setActiveTool('paint'); setCurrentFile(null); }} />
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-8">
             {activeTool === 'dashboard' && (
               <div className="space-y-8">
-                <h3 className="text-3xl font-display text-white">Bienvenue, Administrateur</h3>
+                <h3 className="text-3xl font-display text-white">Bienvenue dans le Panneau Admin</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <StatCard label="Fichiers en cache" value={files.length} icon={<Save className="text-primary" />} />
+                  <StatCard label="Fichiers stockés" value={files.length} icon={<Save className="text-primary" />} />
                   <StatCard label="Temps restant" value={`${timerMinutes}:${timerSeconds.toString().padStart(2, '0')}`} icon={<Timer className="text-secondary" />} />
-                  <StatCard label="Outils actifs" value="6" icon={<Shield className="text-accent" />} />
+                  <StatCard label="Modules actifs" value="8" icon={<BrainCircuit className="text-accent" />} />
                 </div>
                 <div className="glass-card p-6 rounded-3xl">
-                  <h4 className="text-lg font-bold mb-4 text-white">Fichiers récents</h4>
+                  <h4 className="text-lg font-bold mb-4 text-white">Archives Récentes</h4>
                   <div className="space-y-2">
                     {files.map(f => (
                       <div key={f.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group">
@@ -163,8 +199,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             {activeTool === 'explorer' && (
               <div className="space-y-8">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-3xl font-display text-white">Explorateur de Fichiers</h3>
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest">{files.length} fichiers stockés</div>
+                  <h3 className="text-3xl font-display text-white">Explorateur de Données</h3>
+                  <div className="text-xs text-slate-500 font-bold uppercase tracking-widest">{files.length} fichiers archivés</div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {files.length === 0 ? (
@@ -196,22 +232,47 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             )}
             {activeTool === 'timer' && (
               <div className="max-w-md mx-auto text-center space-y-8">
-                <h3 className="text-3xl font-display text-white">Minuteur d'Évaluation</h3>
-                <div className="text-8xl font-mono text-primary font-bold tracking-tighter">
+                <h3 className="text-3xl font-display text-white">Chronomètre IA</h3>
+                
+                <div className="flex justify-center gap-4 mb-8">
+                  <button 
+                    onClick={() => { setTimerMode('countdown'); setIsTimerRunning(false); setTimerMinutes(60); setTimerSeconds(0); }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${timerMode === 'countdown' ? 'bg-primary text-white' : 'bg-white/5 text-slate-500'}`}
+                  >
+                    Minuteur
+                  </button>
+                  <button 
+                    onClick={() => { setTimerMode('stopwatch'); setIsTimerRunning(false); setTimerMinutes(0); setTimerSeconds(0); }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${timerMode === 'stopwatch' ? 'bg-primary text-white' : 'bg-white/5 text-slate-500'}`}
+                  >
+                    Chronomètre
+                  </button>
+                </div>
+
+                <div className="text-8xl font-mono text-primary font-bold tracking-tighter drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
                   {timerMinutes}:{timerSeconds.toString().padStart(2, '0')}
                 </div>
+                
                 <div className="flex gap-4">
-                  <input 
-                    type="number" 
-                    value={timerMinutes} 
-                    onChange={e => setTimerMinutes(parseInt(e.target.value) || 0)}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-center text-2xl"
-                  />
+                  {timerMode === 'countdown' && (
+                    <input 
+                      type="number" 
+                      value={timerMinutes} 
+                      onChange={e => setTimerMinutes(parseInt(e.target.value) || 0)}
+                      className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-center text-2xl"
+                    />
+                  )}
                   <button 
                     onClick={() => setIsTimerRunning(!isTimerRunning)}
-                    className={`flex-1 rounded-2xl font-bold text-white transition-all ${isTimerRunning ? 'bg-rose-500' : 'bg-primary'}`}
+                    className={`flex-1 rounded-2xl font-bold text-white transition-all py-4 ${isTimerRunning ? 'bg-rose-500' : 'bg-primary'}`}
                   >
                     {isTimerRunning ? 'Stop' : 'Démarrer'}
+                  </button>
+                  <button 
+                    onClick={() => { setIsTimerRunning(false); setTimerMinutes(timerMode === 'countdown' ? 60 : 0); setTimerSeconds(0); }}
+                    className="bg-white/5 text-white px-6 rounded-2xl font-bold hover:bg-white/10 transition-all"
+                  >
+                    Reset
                   </button>
                 </div>
               </div>
@@ -219,7 +280,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
             {activeTool === 'quiz' && (
               <div className="space-y-6">
-                <h3 className="text-3xl font-display text-white">Bibliothèque de Quiz</h3>
+                <h3 className="text-3xl font-display text-white">Générateur de Quiz IA</h3>
+                <p className="text-slate-400">Le Cortex IA va générer un quiz complet sur le sujet sélectionné.</p>
                 <div className="flex gap-4">
                   <select 
                     value={quizTopic}
@@ -233,15 +295,82 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   </select>
                   <button 
                     onClick={loadQuizTemplate}
-                    className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
+                    disabled={isGeneratingQuiz}
+                    className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all disabled:opacity-50"
                   >
-                    Charger le modèle
+                    {isGeneratingQuiz ? <Loader2 className="animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    {isGeneratingQuiz ? 'Génération...' : 'Générer avec IA'}
                   </button>
                 </div>
                 {generatedQuiz && (
-                  <div className="glass-card p-8 rounded-3xl bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 font-mono text-sm">
-                    {generatedQuiz}
-                  </div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => {
+                          const name = prompt("Nom du fichier ?") || `Quiz ${quizTopic}`;
+                          saveFile('word', generatedQuiz, name);
+                          showStatus("Quiz enregistré !");
+                        }}
+                        className="bg-emerald-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
+                      >
+                        <Save className="w-4 h-4" /> Enregistrer le Quiz
+                      </button>
+                    </div>
+                    <div className="glass-card p-8 rounded-3xl bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 font-mono text-sm">
+                      {generatedQuiz}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
+
+            {activeTool === 'lesson' && (
+              <div className="space-y-6">
+                <h3 className="text-3xl font-display text-white">Générateur de Cours IA</h3>
+                <p className="text-slate-400">Décrivez le sujet du cours et le Cortex IA préparera un plan détaillé.</p>
+                <div className="flex gap-4">
+                  <input 
+                    type="text" 
+                    placeholder="Sujet du cours (ex: Introduction aux nombres relatifs en 5ème)..."
+                    value={lessonPrompt}
+                    onChange={e => setLessonPrompt(e.target.value)}
+                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-primary/50 outline-none"
+                  />
+                  <button 
+                    onClick={generateLesson}
+                    disabled={isGeneratingLesson || !lessonPrompt.trim()}
+                    className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all disabled:opacity-50"
+                  >
+                    {isGeneratingLesson ? <Loader2 className="animate-spin" /> : <BookOpen className="w-4 h-4" />}
+                    {isGeneratingLesson ? 'Réflexion...' : 'Générer le Cours'}
+                  </button>
+                </div>
+                {generatedLesson && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    <div className="flex justify-end">
+                      <button 
+                        onClick={() => {
+                          const name = prompt("Nom du fichier ?") || "Plan de Cours IA";
+                          saveFile('word', generatedLesson, name);
+                          showStatus("Cours enregistré !");
+                        }}
+                        className="bg-emerald-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
+                      >
+                        <Save className="w-4 h-4" /> Enregistrer le Plan
+                      </button>
+                    </div>
+                    <div className="glass-card p-8 rounded-3xl bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 font-mono text-sm">
+                      {generatedLesson}
+                    </div>
+                  </motion.div>
                 )}
               </div>
             )}
@@ -338,8 +467,9 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
 
   const renderTool = () => {
     if (selectedProfTool === "Tirage au Sort Élèves") return <StudentRandomizer />;
-    if (selectedProfTool === "Calculatrice Scientifique") return <ScientificCalculator />;
-    if (selectedProfTool === "Convertisseur d'Unités") return <UnitConverter />;
+    if (selectedProfTool === "Générateur d'Exercices IA") return <ExerciseGenerator />;
+    if (selectedProfTool === "Calculatrice") return <QuantumCalculator />;
+    if (selectedProfTool === "Convertisseur") return <UnitConverter />;
     if (selectedProfTool === "Gestion des Notes") return <GradeManager />;
     if (selectedProfTool === "Gestion des Groupes") return <GroupGenerator />;
     if (selectedProfTool === "Bibliothèque de Formules") return <FormulaLibrary />;
@@ -416,26 +546,22 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-8">
             {[
               { name: "Générateur de Devoirs", icon: <FileEdit /> },
-              { name: "Suivi des Élèves", icon: <GraduationCap /> },
-              { name: "Calculatrice Scientifique", icon: <Calculator /> },
-              { name: "Convertisseur d'Unités", icon: <ArrowRight /> },
-              { name: "Générateur de Graphiques", icon: <Layout /> },
-              { name: "Banque d'Exercices", icon: <BookOpen /> },
-              { name: "Planificateur de Cours", icon: <Timer /> },
+              { name: "Générateur d'Exercices IA", icon: <BrainCircuit /> },
+              { name: "Calculatrice", icon: <Calculator /> },
+              { name: "Convertisseur", icon: <ArrowRight /> },
+              { name: "Chronomètre", icon: <Timer /> },
               { name: "Gestion des Notes", icon: <Star /> },
-              { name: "Ressources GéoGebra", icon: <Binary /> },
-              { name: "Formulaire de Rappel", icon: <FileText /> },
-              { name: "Chronomètre de Classe", icon: <Timer /> },
-              { name: "Tirage au Sort Élèves", icon: <Sparkles /> },
+              { name: "Formulaire", icon: <FileText /> },
+              { name: "Tirage au Sort", icon: <Sparkles /> },
               { name: "Générateur de QCM", icon: <Plus /> },
               { name: "Aide à la Correction", icon: <Shield /> },
-              { name: "Statistiques de Classe", icon: <Percent /> },
-              { name: "Bibliothèque de Formules", icon: <Sigma /> },
+              { name: "Statistiques", icon: <Percent /> },
+              { name: "Bibliothèque", icon: <Sigma /> },
               { name: "Outil de Géométrie", icon: <Palette /> },
-              { name: "Calcul Mental Flash", icon: <Zap /> },
+              { name: "Calcul Mental", icon: <Zap /> },
               { name: "Gestion des Groupes", icon: <Layout /> },
               { name: "Roue de la Fortune", icon: <Sparkles /> },
-              { name: "Rapports de Progression", icon: <TrophyIcon /> }
+              { name: "Rapports", icon: <TrophyIcon /> }
             ].map((tool, i) => (
               <button 
                 key={i} 
@@ -482,7 +608,7 @@ const StudentRandomizer = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
-        <h4 className="text-xl font-display text-white mb-6">Liste de la classe</h4>
+        <h4 className="text-xl font-display text-white mb-6">Base de Données Élèves IA</h4>
         <div className="flex gap-2 mb-6">
           <input 
             type="text" 
@@ -528,8 +654,89 @@ const StudentRandomizer = () => {
   );
 };
 
-const ScientificCalculator = () => {
+const ExerciseGenerator = () => {
+  const [prompt, setPrompt] = useState('');
+  const [generatedExercises, setGeneratedExercises] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    setIsGenerating(true);
+    try {
+      const content = await generateTeacherContent(prompt, 'exercises');
+      setGeneratedExercises(content);
+    } catch (error) {
+      setGeneratedExercises("Désolé, une erreur est survenue lors de la génération des exercices.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="glass-card p-8 rounded-3xl border-white/5">
+        <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+          <BrainCircuit className="text-primary" />
+          Générateur d'Exercices IA
+        </h3>
+        <div className="space-y-4">
+          <textarea 
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Décrivez les exercices que vous souhaitez générer (ex: 10 exercices sur les fractions pour une classe de 5ème)..."
+            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl p-4 min-h-[120px] focus:outline-none focus:border-primary/50 transition-all"
+          />
+          <button 
+            onClick={handleGenerate}
+            disabled={isGenerating || !prompt.trim()}
+            className="w-full py-4 bg-primary hover:bg-primary/80 disabled:opacity-50 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Génération en cours...
+              </>
+            ) : (
+              <>
+                <Sparkles size={20} />
+                Générer les Exercices
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {generatedExercises && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-8 rounded-3xl border-white/5"
+        >
+          <div className="flex justify-between items-center mb-6">
+            <h4 className="text-xl font-bold">Exercices Générés</h4>
+            <div className="flex gap-2">
+              <button className="p-2 hover:bg-white/5 rounded-lg transition-all" title="Copier">
+                <Save size={20} className="text-primary" />
+              </button>
+              <button className="p-2 hover:bg-white/5 rounded-lg transition-all" title="Télécharger">
+                <Download size={20} className="text-primary" />
+              </button>
+            </div>
+          </div>
+          <div className="prose prose-invert max-w-none">
+            <pre className="whitespace-pre-wrap font-sans text-slate-300 leading-relaxed bg-slate-900/30 p-6 rounded-2xl border border-white/5">
+              {generatedExercises}
+            </pre>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+const QuantumCalculator = () => {
   const [display, setDisplay] = useState('');
+  const [isCalculating, setIsCalculating] = useState(false);
   const buttons = [
     '7', '8', '9', '/', 'sin',
     '4', '5', '6', '*', 'cos',
@@ -540,13 +747,18 @@ const ScientificCalculator = () => {
 
   const handleBtn = (btn: string) => {
     if (btn === '=') {
-      try {
-        // Simple eval replacement for basic math
-        const res = eval(display.replace('sqrt', 'Math.sqrt').replace('sin', 'Math.sin').replace('cos', 'Math.cos').replace('tan', 'Math.tan').replace('log', 'Math.log10').replace('^', '**'));
-        setDisplay(res.toString());
-      } catch (e) {
-        setDisplay('Erreur');
-      }
+      setIsCalculating(true);
+      setTimeout(() => {
+        try {
+          // Simple eval replacement for basic math
+          const res = eval(display.replace('sqrt', 'Math.sqrt').replace('sin', 'Math.sin').replace('cos', 'Math.cos').replace('tan', 'Math.tan').replace('log', 'Math.log10').replace('^', '**'));
+          setDisplay(res.toString());
+        } catch (e) {
+          setDisplay('Erreur');
+        } finally {
+          setIsCalculating(false);
+        }
+      }, 600);
     } else if (btn === 'C') {
       setDisplay('');
     } else {
@@ -555,8 +767,14 @@ const ScientificCalculator = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto glass-card p-8 rounded-[3rem] border-white/5">
-      <div className="bg-slate-900 p-6 rounded-2xl mb-6 text-right text-3xl font-mono text-primary overflow-hidden h-20 flex items-center justify-end">
+    <div className="max-w-md mx-auto glass-card p-8 rounded-[3rem] border-white/5 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary animate-pulse" />
+      <div className="bg-slate-900 p-6 rounded-2xl mb-6 text-right text-3xl font-mono text-primary overflow-hidden h-20 flex items-center justify-end relative">
+        {isCalculating && (
+          <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        )}
         {display || '0'}
       </div>
       <div className="grid grid-cols-5 gap-2">
@@ -565,7 +783,7 @@ const ScientificCalculator = () => {
             key={btn} 
             onClick={() => handleBtn(btn)}
             className={`p-4 rounded-xl font-bold transition-all ${
-              btn === '=' ? 'bg-primary text-white col-span-1' : 
+              btn === '=' ? 'bg-primary text-white col-span-1 shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 
               btn === 'C' ? 'bg-rose-500 text-white' : 
               'bg-white/5 text-white hover:bg-white/10'
             }`}
@@ -574,6 +792,7 @@ const ScientificCalculator = () => {
           </button>
         ))}
       </div>
+      <p className="text-[8px] text-slate-600 uppercase tracking-widest text-center mt-6 font-bold">Calculatrice Scientifique • Précision</p>
     </div>
   );
 };
@@ -659,7 +878,7 @@ const GradeManager = () => {
       </div>
       <div className="glass-card p-8 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center">
         <div className="text-6xl font-display text-primary mb-2">{average}</div>
-        <p className="text-slate-500 uppercase tracking-widest text-xs">Moyenne de la classe</p>
+        <p className="text-slate-500 uppercase tracking-widest text-xs">Moyenne de la Classe</p>
         <div className="mt-8 w-full grid grid-cols-2 gap-4">
           <div className="p-4 bg-white/5 rounded-2xl">
             <div className="text-xs text-slate-500 mb-1">Max</div>
@@ -702,7 +921,7 @@ const GroupGenerator = () => {
       <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <h4 className="text-xl font-display text-white mb-6">Liste des Élèves</h4>
+            <h4 className="text-xl font-display text-white mb-6">Matrice des Élèves</h4>
             <div className="flex gap-2 mb-6">
               <input type="text" value={newStudent} onChange={e => setNewStudent(e.target.value)} onKeyDown={e => e.key === 'Enter' && addStudent()} placeholder="Nom..." className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white" />
               <button onClick={addStudent} className="bg-primary p-3 rounded-xl text-white"><Plus /></button>

@@ -5,14 +5,13 @@ import {
   Save, Trash2, Plus, Play, BrainCircuit, Download,
   FileCode, FileEdit, Layout, GraduationCap, Calculator, ArrowRight, BookOpen, Star, Binary, Sparkles, Percent, Sigma, Zap, Trophy as TrophyIcon, Loader2
 } from 'lucide-react';
-import { askMathGuru, generateTeacherContent } from '../services/aiService';
 import { Grade } from '../types';
 
 interface AdminPanelProps {
   onClose: () => void;
 }
 
-type AdminTool = 'dashboard' | 'explorer' | 'timer' | 'quiz' | 'word' | 'excel' | 'paint' | 'tools' | 'lesson';
+type AdminTool = 'dashboard' | 'explorer' | 'timer' | 'word' | 'excel' | 'paint' | 'tools';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [activeTool, setActiveTool] = useState<AdminTool>('dashboard');
@@ -85,42 +84,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     setActiveTool(file.type as AdminTool);
   };
 
-  // AI Quiz State
-  const [quizPrompt, setQuizPrompt] = useState('');
-  const [generatedQuiz, setGeneratedQuiz] = useState('');
-  const [quizTopic, setQuizTopic] = useState('fractions');
-  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
-
-  const loadQuizTemplate = async () => {
-    setIsGeneratingQuiz(true);
-    try {
-      const content = await generateTeacherContent(`Génère un quiz sur le sujet suivant : ${quizTopic}`, 'quiz');
-      setGeneratedQuiz(content);
-    } catch (error) {
-      setGeneratedQuiz("Erreur lors de la génération du quiz.");
-    } finally {
-      setIsGeneratingQuiz(false);
-    }
-  };
-
-  // AI Lesson State
-  const [lessonPrompt, setLessonPrompt] = useState('');
-  const [generatedLesson, setGeneratedLesson] = useState('');
-  const [isGeneratingLesson, setIsGeneratingLesson] = useState(false);
-
-  const generateLesson = async () => {
-    if (!lessonPrompt.trim()) return;
-    setIsGeneratingLesson(true);
-    try {
-      const content = await generateTeacherContent(lessonPrompt, 'lesson');
-      setGeneratedLesson(content);
-    } catch (error) {
-      setGeneratedLesson("Erreur lors de la génération du cours.");
-    } finally {
-      setIsGeneratingLesson(false);
-    }
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -155,8 +118,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             <SidebarBtn active={activeTool === 'dashboard'} icon={<Layout />} label="Tableau de bord" onClick={() => { setActiveTool('dashboard'); setCurrentFile(null); }} />
             <SidebarBtn active={activeTool === 'explorer'} icon={<Download />} label="Archives" onClick={() => { setActiveTool('explorer'); setCurrentFile(null); }} />
             <SidebarBtn active={activeTool === 'timer'} icon={<Timer />} label="Chronomètre" onClick={() => { setActiveTool('timer'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'quiz'} icon={<BrainCircuit />} label="Générateur Quiz IA" onClick={() => { setActiveTool('quiz'); setCurrentFile(null); }} />
-            <SidebarBtn active={activeTool === 'lesson'} icon={<BookOpen />} label="Générateur Cours IA" onClick={() => { setActiveTool('lesson'); setCurrentFile(null); }} />
             <SidebarBtn active={activeTool === 'tools'} icon={<Plus />} label="Outils Prof" onClick={() => { setActiveTool('tools'); setCurrentFile(null); }} />
             <div className="pt-6 pb-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">Office</div>
             <SidebarBtn active={activeTool === 'word'} icon={<FileText />} label="Word" onClick={() => { setActiveTool('word'); setCurrentFile(null); }} />
@@ -232,7 +193,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
             )}
             {activeTool === 'timer' && (
               <div className="max-w-md mx-auto text-center space-y-8">
-                <h3 className="text-3xl font-display text-white">Chronomètre IA</h3>
+                <h3 className="text-3xl font-display text-white">Chronomètre</h3>
                 
                 <div className="flex justify-center gap-4 mb-8">
                   <button 
@@ -275,103 +236,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                     Reset
                   </button>
                 </div>
-              </div>
-            )}
-
-            {activeTool === 'quiz' && (
-              <div className="space-y-6">
-                <h3 className="text-3xl font-display text-white">Générateur de Quiz IA</h3>
-                <p className="text-slate-400">Le Cortex IA va générer un quiz complet sur le sujet sélectionné.</p>
-                <div className="flex gap-4">
-                  <select 
-                    value={quizTopic}
-                    onChange={e => setQuizTopic(e.target.value)}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-primary/50"
-                  >
-                    <option value="fractions">Fractions (5ème)</option>
-                    <option value="pythagore">Pythagore (4ème)</option>
-                    <option value="equations">Équations (3ème)</option>
-                    <option value="proportionalite">Proportionnalité (6/5ème)</option>
-                  </select>
-                  <button 
-                    onClick={loadQuizTemplate}
-                    disabled={isGeneratingQuiz}
-                    className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all disabled:opacity-50"
-                  >
-                    {isGeneratingQuiz ? <Loader2 className="animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    {isGeneratingQuiz ? 'Génération...' : 'Générer avec IA'}
-                  </button>
-                </div>
-                {generatedQuiz && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-4"
-                  >
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={() => {
-                          const name = prompt("Nom du fichier ?") || `Quiz ${quizTopic}`;
-                          saveFile('word', generatedQuiz, name);
-                          showStatus("Quiz enregistré !");
-                        }}
-                        className="bg-emerald-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
-                      >
-                        <Save className="w-4 h-4" /> Enregistrer le Quiz
-                      </button>
-                    </div>
-                    <div className="glass-card p-8 rounded-3xl bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 font-mono text-sm">
-                      {generatedQuiz}
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            )}
-
-            {activeTool === 'lesson' && (
-              <div className="space-y-6">
-                <h3 className="text-3xl font-display text-white">Générateur de Cours IA</h3>
-                <p className="text-slate-400">Décrivez le sujet du cours et le Cortex IA préparera un plan détaillé.</p>
-                <div className="flex gap-4">
-                  <input 
-                    type="text" 
-                    placeholder="Sujet du cours (ex: Introduction aux nombres relatifs en 5ème)..."
-                    value={lessonPrompt}
-                    onChange={e => setLessonPrompt(e.target.value)}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-primary/50 outline-none"
-                  />
-                  <button 
-                    onClick={generateLesson}
-                    disabled={isGeneratingLesson || !lessonPrompt.trim()}
-                    className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all disabled:opacity-50"
-                  >
-                    {isGeneratingLesson ? <Loader2 className="animate-spin" /> : <BookOpen className="w-4 h-4" />}
-                    {isGeneratingLesson ? 'Réflexion...' : 'Générer le Cours'}
-                  </button>
-                </div>
-                {generatedLesson && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-4"
-                  >
-                    <div className="flex justify-end">
-                      <button 
-                        onClick={() => {
-                          const name = prompt("Nom du fichier ?") || "Plan de Cours IA";
-                          saveFile('word', generatedLesson, name);
-                          showStatus("Cours enregistré !");
-                        }}
-                        className="bg-emerald-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
-                      >
-                        <Save className="w-4 h-4" /> Enregistrer le Plan
-                      </button>
-                    </div>
-                    <div className="glass-card p-8 rounded-3xl bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 font-mono text-sm">
-                      {generatedLesson}
-                    </div>
-                  </motion.div>
-                )}
               </div>
             )}
 
@@ -467,7 +331,6 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
 
   const renderTool = () => {
     if (selectedProfTool === "Tirage au Sort Élèves") return <StudentRandomizer />;
-    if (selectedProfTool === "Générateur d'Exercices IA") return <ExerciseGenerator />;
     if (selectedProfTool === "Calculatrice") return <QuantumCalculator />;
     if (selectedProfTool === "Convertisseur") return <UnitConverter />;
     if (selectedProfTool === "Gestion des Notes") return <GradeManager />;
@@ -546,7 +409,6 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-8">
             {[
               { name: "Générateur de Devoirs", icon: <FileEdit /> },
-              { name: "Générateur d'Exercices IA", icon: <BrainCircuit /> },
               { name: "Calculatrice", icon: <Calculator /> },
               { name: "Convertisseur", icon: <ArrowRight /> },
               { name: "Chronomètre", icon: <Timer /> },
@@ -608,7 +470,7 @@ const StudentRandomizer = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
-        <h4 className="text-xl font-display text-white mb-6">Base de Données Élèves IA</h4>
+        <h4 className="text-xl font-display text-white mb-6">Base de Données Élèves</h4>
         <div className="flex gap-2 mb-6">
           <input 
             type="text" 
@@ -650,86 +512,6 @@ const StudentRandomizer = () => {
           Lancer le tirage
         </button>
       </div>
-    </div>
-  );
-};
-
-const ExerciseGenerator = () => {
-  const [prompt, setPrompt] = useState('');
-  const [generatedExercises, setGeneratedExercises] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const handleGenerate = async () => {
-    if (!prompt.trim()) return;
-    setIsGenerating(true);
-    try {
-      const content = await generateTeacherContent(prompt, 'exercises');
-      setGeneratedExercises(content);
-    } catch (error) {
-      setGeneratedExercises("Désolé, une erreur est survenue lors de la génération des exercices.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="glass-card p-8 rounded-3xl border-white/5">
-        <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-          <BrainCircuit className="text-primary" />
-          Générateur d'Exercices IA
-        </h3>
-        <div className="space-y-4">
-          <textarea 
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Décrivez les exercices que vous souhaitez générer (ex: 10 exercices sur les fractions pour une classe de 5ème)..."
-            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl p-4 min-h-[120px] focus:outline-none focus:border-primary/50 transition-all"
-          />
-          <button 
-            onClick={handleGenerate}
-            disabled={isGenerating || !prompt.trim()}
-            className="w-full py-4 bg-primary hover:bg-primary/80 disabled:opacity-50 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="animate-spin" />
-                Génération en cours...
-              </>
-            ) : (
-              <>
-                <Sparkles size={20} />
-                Générer les Exercices
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {generatedExercises && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8 rounded-3xl border-white/5"
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-xl font-bold">Exercices Générés</h4>
-            <div className="flex gap-2">
-              <button className="p-2 hover:bg-white/5 rounded-lg transition-all" title="Copier">
-                <Save size={20} className="text-primary" />
-              </button>
-              <button className="p-2 hover:bg-white/5 rounded-lg transition-all" title="Télécharger">
-                <Download size={20} className="text-primary" />
-              </button>
-            </div>
-          </div>
-          <div className="prose prose-invert max-w-none">
-            <pre className="whitespace-pre-wrap font-sans text-slate-300 leading-relaxed bg-slate-900/30 p-6 rounded-2xl border border-white/5">
-              {generatedExercises}
-            </pre>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };

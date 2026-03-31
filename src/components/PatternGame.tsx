@@ -86,24 +86,24 @@ export const PatternGame: React.FC<PatternGameProps> = ({ difficulty, grade, onB
         </div>
       </div>
 
-      <div className="glass-card p-6 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] w-full max-w-2xl text-center relative overflow-hidden">
+      <div className="glass-card p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] w-full max-w-2xl text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent" />
-        <h2 className="text-lg md:text-2xl font-display text-slate-400 mb-6 md:mb-8 uppercase tracking-widest">Complète la suite</h2>
+        <h2 className="text-base md:text-2xl font-display text-slate-400 mb-4 md:mb-8 uppercase tracking-widest">Complète la suite</h2>
         
-        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6 md:mb-12">
           {sequence.map((num, i) => (
             <motion.div
               key={i}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: i * 0.1 }}
-              className="w-12 h-12 md:w-20 md:h-20 glass rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-3xl font-bold text-white border-white/10"
+              className="w-10 h-10 md:w-20 md:h-20 glass rounded-lg md:rounded-2xl flex items-center justify-center text-sm md:text-3xl font-bold text-white border-white/10"
             >
               {num}
             </motion.div>
           ))}
-          <div className="w-12 h-12 md:w-20 md:h-20 bg-primary/20 border-2 border-dashed border-primary/50 rounded-xl md:rounded-2xl flex items-center justify-center">
-            <HelpCircle className="w-6 h-6 md:w-8 md:h-8 text-primary animate-pulse" />
+          <div className="w-10 h-10 md:w-20 md:h-20 bg-primary/20 border-2 border-dashed border-primary/50 rounded-lg md:rounded-2xl flex items-center justify-center">
+            <HelpCircle className="w-5 h-5 md:w-8 md:h-8 text-primary animate-pulse" />
           </div>
         </div>
 
@@ -114,7 +114,7 @@ export const PatternGame: React.FC<PatternGameProps> = ({ difficulty, grade, onB
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleAnswer(opt)}
-              className="py-4 md:py-6 glass rounded-xl md:rounded-2xl text-lg md:text-xl font-bold text-white hover:bg-white/5 transition-all border-white/5"
+              className="py-3 md:py-6 glass rounded-xl md:rounded-2xl text-base md:text-xl font-bold text-white hover:bg-white/5 transition-all border-white/5"
             >
               {opt}
             </motion.button>
@@ -134,7 +134,12 @@ export const PatternGame: React.FC<PatternGameProps> = ({ difficulty, grade, onB
               <h2 className="text-3xl md:text-4xl font-display text-white mb-2 md:mb-4">Temps écoulé !</h2>
               <p className="text-slate-400 mb-6 md:mb-8 text-base md:text-lg">Ton score neural : <span className="text-primary font-bold">{score}</span></p>
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => {
+                  setScore(0);
+                  setTimeLeft(30);
+                  setIsGameOver(false);
+                  generatePattern();
+                }}
                 className="w-full py-3 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold hover:scale-105 transition-all text-sm md:text-base"
               >
                 Recommencer

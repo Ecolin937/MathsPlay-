@@ -89,9 +89,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-0 md:p-8"
     >
-      <div className="w-full h-full max-w-7xl glass-card rounded-[3rem] overflow-hidden flex flex-col border-white/10">
+      <div className="w-full h-full max-w-7xl glass-card rounded-none md:rounded-[3rem] overflow-hidden flex flex-col border-white/10">
         {/* Header */}
         <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -126,7 +126,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-8">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
             {activeTool === 'dashboard' && (
               <div className="space-y-8">
                 <h3 className="text-3xl font-display text-white">Bienvenue dans le Panneau Admin</h3>
@@ -271,6 +271,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </div>
         </div>
 
+        {/* Mobile Navigation */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/80 backdrop-blur-xl border-t border-white/10 flex justify-around p-2 z-[210]">
+          <MobileNavBtn active={activeTool === 'dashboard'} icon={<Layout />} onClick={() => { setActiveTool('dashboard'); setCurrentFile(null); }} />
+          <MobileNavBtn active={activeTool === 'explorer'} icon={<Download />} onClick={() => { setActiveTool('explorer'); setCurrentFile(null); }} />
+          <MobileNavBtn active={activeTool === 'timer'} icon={<Timer />} onClick={() => { setActiveTool('timer'); setCurrentFile(null); }} />
+          <MobileNavBtn active={activeTool === 'tools'} icon={<Plus />} onClick={() => { setActiveTool('tools'); setCurrentFile(null); }} />
+          <MobileNavBtn active={activeTool === 'word'} icon={<FileText />} onClick={() => { setActiveTool('word'); setCurrentFile(null); }} />
+        </div>
+
         {/* Save Notification */}
         <AnimatePresence>
           {saveStatus && (
@@ -301,13 +310,24 @@ const SidebarBtn = ({ active, icon, label, onClick }: any) => (
   </button>
 );
 
+const MobileNavBtn = ({ active, icon, onClick }: any) => (
+  <button 
+    onClick={onClick}
+    className={`p-3 rounded-xl transition-all ${
+      active ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400'
+    }`}
+  >
+    {React.cloneElement(icon, { className: "w-6 h-6" })}
+  </button>
+);
+
 const StatCard = ({ label, value, icon }: any) => (
-  <div className="glass-card p-6 rounded-3xl border-white/5">
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</span>
+  <div className="glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl border-white/5">
+    <div className="flex items-center justify-between mb-1 md:mb-2">
+      <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</span>
       {icon}
     </div>
-    <div className="text-3xl font-display text-white">{value}</div>
+    <div className="text-2xl md:text-3xl font-display text-white">{value}</div>
   </div>
 );
 
@@ -342,19 +362,19 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
 
     return (
       <div className="space-y-6">
-        <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
-          <p className="text-slate-400 mb-6">Utilisez cet outil pour générer du contenu pédagogique personnalisé.</p>
-          <div className="flex gap-4">
+        <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] border-white/5">
+          <p className="text-slate-400 mb-4 md:mb-6 text-sm md:text-base">Utilisez cet outil pour générer du contenu pédagogique personnalisé.</p>
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4">
             <input 
               type="text" 
               placeholder="Détails (ex: Chapitre, Difficulté, Thème...)"
               value={input}
               onChange={e => setInput(e.target.value)}
-              className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-primary/50 outline-none"
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white focus:border-primary/50 outline-none text-sm md:text-base"
             />
             <button 
               onClick={handleAction}
-              className="bg-primary text-white px-8 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
+              className="bg-primary text-white px-6 md:px-8 py-3 md:py-0 rounded-xl md:rounded-2xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-all text-sm md:text-base"
             >
               <Play className="w-4 h-4" /> Générer
             </button>
@@ -373,12 +393,12 @@ const ProfToolContent = ({ selectedProfTool, setSelectedProfTool, onSave }: any)
                   const name = prompt("Nom du fichier ?") || selectedProfTool;
                   onSave(content, name);
                 }}
-                className="bg-emerald-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all"
+                className="w-full md:w-auto bg-emerald-600 text-white px-6 py-3 md:py-2 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-all text-sm"
               >
                 <Save className="w-4 h-4" /> Enregistrer le résultat
               </button>
             </div>
-            <div className="glass-card p-8 rounded-[2.5rem] bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5">
+            <div className="glass-card p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] bg-slate-900/50 whitespace-pre-wrap text-slate-300 leading-relaxed border-white/5 text-sm md:text-base">
               {content}
             </div>
           </motion.div>
@@ -468,46 +488,46 @@ const StudentRandomizer = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="glass-card p-8 rounded-[2.5rem] border-white/5">
-        <h4 className="text-xl font-display text-white mb-6">Base de Données Élèves</h4>
-        <div className="flex gap-2 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+      <div className="glass-card p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border-white/5">
+        <h4 className="text-lg md:text-xl font-display text-white mb-4 md:mb-6">Base de Données Élèves</h4>
+        <div className="flex gap-2 mb-4 md:mb-6">
           <input 
             type="text" 
             value={newStudent}
             onChange={e => setNewStudent(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addStudent()}
             placeholder="Nom de l'élève..."
-            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none"
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none text-sm"
           />
-          <button onClick={addStudent} className="bg-primary p-3 rounded-xl text-white"><Plus /></button>
+          <button onClick={addStudent} className="bg-primary p-3 rounded-xl text-white"><Plus className="w-5 h-5" /></button>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
           {students.map((s, i) => (
-            <div key={i} className="bg-white/5 px-4 py-2 rounded-full text-sm text-slate-300 flex items-center gap-2">
+            <div key={i} className="bg-white/5 px-3 py-1.5 rounded-full text-xs text-slate-300 flex items-center gap-2">
               {s} <button onClick={() => setStudents(students.filter((_, idx) => idx !== i))} className="text-rose-500">×</button>
             </div>
           ))}
         </div>
       </div>
-      <div className="glass-card p-8 rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center">
-        <div className={`w-32 h-32 rounded-full border-4 border-dashed border-primary/30 flex items-center justify-center mb-8 ${isSpinning ? 'animate-spin' : ''}`}>
-          <Sparkles className="w-12 h-12 text-primary" />
+      <div className="glass-card p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border-white/5 flex flex-col items-center justify-center text-center">
+        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-dashed border-primary/30 flex items-center justify-center mb-6 md:mb-8 ${isSpinning ? 'animate-spin' : ''}`}>
+          <Sparkles className="w-10 h-10 md:w-12 md:h-12 text-primary" />
         </div>
         <AnimatePresence mode="wait">
           {winner ? (
-            <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8">
-              <p className="text-slate-500 uppercase tracking-widest text-xs mb-2">Élève sélectionné :</p>
-              <h5 className="text-4xl font-display text-primary">{winner}</h5>
+            <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-6 md:mb-8">
+              <p className="text-slate-500 uppercase tracking-widest text-[10px] mb-1">Élève sélectionné :</p>
+              <h5 className="text-3xl md:text-4xl font-display text-primary">{winner}</h5>
             </motion.div>
           ) : (
-            <p className="text-slate-400 mb-8">Prêt pour le tirage au sort</p>
+            <p className="text-slate-400 mb-6 md:mb-8 text-sm">Prêt pour le tirage au sort</p>
           )}
         </AnimatePresence>
         <button 
           onClick={pickWinner}
           disabled={students.length === 0 || isSpinning}
-          className="w-full py-4 bg-primary text-white rounded-2xl font-bold hover:scale-105 transition-all disabled:opacity-50"
+          className="w-full py-3 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold hover:scale-105 transition-all disabled:opacity-50 text-sm md:text-base"
         >
           Lancer le tirage
         </button>
@@ -549,9 +569,9 @@ const QuantumCalculator = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto glass-card p-8 rounded-[3rem] border-white/5 relative overflow-hidden">
+    <div className="max-w-md mx-auto glass-card p-4 md:p-8 rounded-3xl md:rounded-[3rem] border-white/5 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary animate-pulse" />
-      <div className="bg-slate-900 p-6 rounded-2xl mb-6 text-right text-3xl font-mono text-primary overflow-hidden h-20 flex items-center justify-end relative">
+      <div className="bg-slate-900 p-4 md:p-6 rounded-2xl mb-4 md:mb-6 text-right text-2xl md:text-3xl font-mono text-primary overflow-hidden h-16 md:h-20 flex items-center justify-end relative">
         {isCalculating && (
           <div className="absolute inset-0 bg-slate-900/80 flex items-center justify-center">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -559,12 +579,12 @@ const QuantumCalculator = () => {
         )}
         {display || '0'}
       </div>
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 gap-1.5 md:gap-2">
         {buttons.map(btn => (
           <button 
             key={btn} 
             onClick={() => handleBtn(btn)}
-            className={`p-4 rounded-xl font-bold transition-all ${
+            className={`p-2.5 md:p-4 rounded-lg md:rounded-xl font-bold transition-all text-xs md:text-base ${
               btn === '=' ? 'bg-primary text-white col-span-1 shadow-[0_0_15px_rgba(99,102,241,0.5)]' : 
               btn === 'C' ? 'bg-rose-500 text-white' : 
               'bg-white/5 text-white hover:bg-white/10'
@@ -574,7 +594,7 @@ const QuantumCalculator = () => {
           </button>
         ))}
       </div>
-      <p className="text-[8px] text-slate-600 uppercase tracking-widest text-center mt-6 font-bold">Calculatrice Scientifique • Précision</p>
+      <p className="text-[8px] text-slate-600 uppercase tracking-widest text-center mt-4 md:mt-6 font-bold">Calculatrice Scientifique • Précision</p>
     </div>
   );
 };
@@ -597,31 +617,31 @@ const UnitConverter = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto glass-card p-10 rounded-[3rem] border-white/5 space-y-8">
-      <h4 className="text-2xl font-display text-white text-center">Convertisseur de Longueurs</h4>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        <div className="space-y-2">
+    <div className="max-w-xl mx-auto glass-card p-6 md:p-10 rounded-2xl md:rounded-[3rem] border-white/5 space-y-6 md:space-y-8">
+      <h4 className="text-xl md:text-2xl font-display text-white text-center">Convertisseur de Longueurs</h4>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 items-end">
+        <div className="space-y-1.5 md:space-y-2">
           <label className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Valeur</label>
-          <input type="number" value={value} onChange={e => setValue(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white" />
+          <input type="number" value={value} onChange={e => setValue(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm" />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1.5 md:space-y-2">
           <label className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">De</label>
-          <select value={fromUnit} onChange={e => setFromUnit(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-white">
+          <select value={fromUnit} onChange={e => setFromUnit(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-white text-sm">
             {Object.keys(units).map(u => <option key={u} value={u}>{u}</option>)}
           </select>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1.5 md:space-y-2">
           <label className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Vers</label>
-          <select value={toUnit} onChange={e => setToUnit(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-white">
+          <select value={toUnit} onChange={e => setToUnit(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-white text-sm">
             {Object.keys(units).map(u => <option key={u} value={u}>{u}</option>)}
           </select>
         </div>
       </div>
-      <button onClick={convert} className="w-full py-4 bg-primary text-white rounded-2xl font-bold hover:scale-105 transition-all">Convertir</button>
+      <button onClick={convert} className="w-full py-3 md:py-4 bg-primary text-white rounded-xl md:rounded-2xl font-bold hover:scale-105 transition-all text-sm md:text-base">Convertir</button>
       {result !== null && (
-        <div className="p-6 bg-primary/10 rounded-2xl border border-primary/30 text-center">
-          <p className="text-slate-400 text-sm mb-1">Résultat :</p>
-          <p className="text-3xl font-display text-white">{result} {toUnit}</p>
+        <div className="p-4 md:p-6 bg-primary/10 rounded-xl md:rounded-2xl border border-primary/30 text-center">
+          <p className="text-slate-400 text-xs md:text-sm mb-1">Résultat :</p>
+          <p className="text-2xl md:text-3xl font-display text-white">{result} {toUnit}</p>
         </div>
       )}
     </div>
@@ -796,12 +816,12 @@ const MentalMathFlash = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto glass-card p-10 rounded-[3rem] border-white/5 text-center space-y-8">
+    <div className="max-w-md mx-auto glass-card p-6 md:p-10 rounded-3xl md:rounded-[3rem] border-white/5 text-center space-y-6 md:space-y-8">
       <div className="flex justify-between items-center">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Calcul Mental</span>
-        <span className="bg-primary/20 text-primary px-4 py-1 rounded-full text-xs font-bold">Score: {score}</span>
+        <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Calcul Mental</span>
+        <span className="bg-primary/20 text-primary px-3 md:px-4 py-1 rounded-full text-[10px] md:text-xs font-bold">Score: {score}</span>
       </div>
-      <div className="text-6xl font-display text-white py-10">
+      <div className="text-4xl md:text-6xl font-display text-white py-6 md:py-10">
         {question.a} {question.op === '*' ? '×' : question.op} {question.b}
       </div>
       <input 
@@ -810,9 +830,9 @@ const MentalMathFlash = () => {
         onChange={e => setAnswer(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && check()}
         autoFocus
-        className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-center text-4xl text-white outline-none focus:border-primary/50"
+        className="w-full bg-white/5 border border-white/10 rounded-xl md:rounded-2xl p-4 md:p-6 text-center text-2xl md:text-4xl text-white outline-none focus:border-primary/50"
       />
-      {feedback && <p className={`font-bold ${feedback === 'Correct !' ? 'text-emerald-500' : 'text-rose-500'}`}>{feedback}</p>}
+      {feedback && <p className={`font-bold text-sm md:text-base ${feedback === 'Correct !' ? 'text-emerald-500' : 'text-rose-500'}`}>{feedback}</p>}
     </div>
   );
 };
@@ -984,15 +1004,15 @@ const MiniWord = ({ initialContent, onSave }: any) => {
   return (
     <div className="h-full flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-display text-white">Mini Word</h3>
-        <button onClick={() => onSave(text)} className="bg-primary text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+        <h3 className="text-xl md:text-2xl font-display text-white">Mini Word</h3>
+        <button onClick={() => onSave(text)} className="bg-primary text-white px-4 md:px-6 py-2 rounded-xl font-bold flex items-center gap-2 text-sm md:text-base">
           <Save className="w-4 h-4" /> Enregistrer
         </button>
       </div>
       <textarea 
         value={text}
         onChange={e => setText(e.target.value)}
-        className="flex-1 bg-white p-8 rounded-3xl text-slate-900 font-serif text-lg focus:outline-none shadow-inner"
+        className="flex-1 bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl text-slate-900 font-serif text-base md:text-lg focus:outline-none shadow-inner min-h-[200px]"
         placeholder="Commencez à écrire..."
       />
     </div>
@@ -1014,13 +1034,13 @@ const MiniExcel = ({ initialContent, onSave }: any) => {
   return (
     <div className="h-full flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-display text-white">Mini Excel</h3>
-        <button onClick={() => onSave(grid)} className="bg-green-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+        <h3 className="text-xl md:text-2xl font-display text-white">Mini Excel</h3>
+        <button onClick={() => onSave(grid)} className="bg-green-600 text-white px-4 md:px-6 py-2 rounded-xl font-bold flex items-center gap-2 text-sm md:text-base">
           <Save className="w-4 h-4" /> Enregistrer
         </button>
       </div>
-      <div className="flex-1 overflow-auto bg-white rounded-3xl p-4">
-        <table className="w-full border-collapse">
+      <div className="flex-1 overflow-auto bg-white rounded-2xl md:rounded-3xl p-2 md:p-4">
+        <table className="w-full border-collapse min-w-[400px]">
           <tbody>
             {grid.map((row, r) => (
               <tr key={r}>
@@ -1029,7 +1049,7 @@ const MiniExcel = ({ initialContent, onSave }: any) => {
                     <input 
                       value={cell}
                       onChange={e => updateCell(r, c, e.target.value)}
-                      className="w-full p-2 text-sm text-slate-900 focus:bg-blue-50 focus:outline-none"
+                      className="w-full p-2 text-xs md:text-sm text-slate-900 focus:bg-blue-50 focus:outline-none"
                     />
                   </td>
                 ))}
@@ -1043,25 +1063,37 @@ const MiniExcel = ({ initialContent, onSave }: any) => {
 };
 
 const MiniPaint = ({ initialContent, onSave }: any) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#6366f1');
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        if (initialContent) {
-          const img = new Image();
-          img.onload = () => ctx.drawImage(img, 0, 0);
-          img.src = initialContent;
-        } else {
+    const updateCanvasSize = () => {
+      const container = containerRef.current;
+      const canvas = canvasRef.current;
+      if (container && canvas) {
+        const { width, height } = container.getBoundingClientRect();
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Redraw content if any
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
           ctx.fillStyle = 'white';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
+          if (initialContent) {
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0, width, height);
+            img.src = initialContent;
+          }
         }
       }
-    }
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    return () => window.removeEventListener('resize', updateCanvasSize);
   }, [initialContent]);
 
   const startDrawing = (e: any) => {
@@ -1075,8 +1107,10 @@ const MiniPaint = ({ initialContent, onSave }: any) => {
     const ctx = canvas?.getContext('2d');
     if (ctx && canvas) {
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
       ctx.lineWidth = 5;
       ctx.lineCap = 'round';
       ctx.strokeStyle = color;
@@ -1095,25 +1129,28 @@ const MiniPaint = ({ initialContent, onSave }: any) => {
 
   return (
     <div className="h-full flex flex-col space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-display text-white">Mini Paint</h3>
-        <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+        <h3 className="text-xl md:text-2xl font-display text-white">Mini Paint</h3>
+        <div className="flex gap-4 w-full md:w-auto justify-between md:justify-end">
           <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer" />
-          <button onClick={() => onSave(canvasRef.current?.toDataURL())} className="bg-purple-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+          <button onClick={() => onSave(canvasRef.current?.toDataURL())} className="bg-purple-600 text-white px-4 md:px-6 py-2 rounded-xl font-bold flex items-center gap-2 text-sm md:text-base">
             <Save className="w-4 h-4" /> Enregistrer
           </button>
         </div>
       </div>
-      <canvas 
-        ref={canvasRef}
-        width={800}
-        height={600}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        className="flex-1 bg-white rounded-3xl cursor-crosshair shadow-lg w-full h-full"
-      />
+      <div ref={containerRef} className="flex-1 bg-white rounded-2xl md:rounded-3xl shadow-lg relative min-h-[300px]">
+        <canvas 
+          ref={canvasRef}
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+          className="absolute inset-0 cursor-crosshair w-full h-full rounded-2xl md:rounded-3xl"
+        />
+      </div>
     </div>
   );
 };

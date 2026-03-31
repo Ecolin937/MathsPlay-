@@ -78,19 +78,19 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
         <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)] border border-primary/50">
           <Trophy className="w-12 h-12 text-primary" />
         </div>
-        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white">Session terminée !</h2>
-        <p className="text-slate-400 mb-8 text-base md:text-lg">{message}</p>
+        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white px-4">Session terminée !</h2>
+        <p className="text-slate-400 mb-8 text-sm md:text-lg px-6">{message}</p>
         
-        <div className="glass-card border-primary/20 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-8 w-full max-w-xs relative overflow-hidden">
+        <div className="glass-card border-primary/20 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-8 w-[80%] max-w-xs relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary" />
           <p className="text-[10px] text-primary uppercase font-bold tracking-[0.3em] mb-4">Note Finale</p>
           <div className="flex items-baseline justify-center gap-1">
-            <span className="text-6xl md:text-8xl font-display text-white">{finalGrade}</span>
-            <span className="text-xl md:text-2xl font-display text-slate-500">/ 20</span>
+            <span className="text-5xl md:text-8xl font-display text-white">{finalGrade}</span>
+            <span className="text-lg md:text-2xl font-display text-slate-500">/ 20</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-12">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 w-full max-w-md mb-8 md:mb-12 px-4">
           <div className="glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl border-white/5">
             <p className="text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Précision</p>
             <p className="text-2xl md:text-3xl font-display text-accent">
@@ -121,15 +121,15 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
           <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
         
-        <div className="flex items-center gap-4 md:gap-6">
+        <div className="flex items-center gap-2 md:gap-6">
           <div className="text-right">
             <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Question</p>
-            <p className="text-xl md:text-2xl font-display text-white">{stats.totalQuestions + 1} <span className="text-slate-600 text-xs md:text-sm">/ {TOTAL_QUESTIONS}</span></p>
+            <p className="text-lg md:text-2xl font-display text-white">{stats.totalQuestions + 1} <span className="text-slate-600 text-[10px] md:text-sm">/ {TOTAL_QUESTIONS}</span></p>
           </div>
-          <div className="w-px h-6 md:h-8 bg-white/10" />
+          <div className="w-px h-4 md:h-8 bg-white/10" />
           <div className="text-left">
             <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Score</p>
-            <p className="text-xl md:text-2xl font-display text-primary">{stats.score}</p>
+            <p className="text-lg md:text-2xl font-display text-primary">{stats.score}</p>
           </div>
         </div>
       </div>
@@ -148,7 +148,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
           )}
         </AnimatePresence>
 
-        <div className="glass-card rounded-2xl md:rounded-[3.5rem] p-8 md:p-16 text-center relative overflow-hidden border-white/5">
+        <div className="glass-card rounded-2xl md:rounded-[3.5rem] p-6 md:p-16 text-center relative overflow-hidden border-white/5">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-50" />
           <AnimatePresence mode="wait">
             <motion.div
@@ -158,8 +158,8 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
               exit={{ opacity: 0, y: -20 }}
               className="relative z-10"
             >
-              <span className="text-[10px] md:text-xs font-bold text-primary uppercase tracking-[0.4em] mb-4 md:mb-6 block opacity-60">Calcul en cours</span>
-              <h3 className="text-5xl md:text-9xl font-display tracking-tighter text-white">
+              <span className="text-[8px] md:text-xs font-bold text-primary uppercase tracking-[0.4em] mb-2 md:mb-6 block opacity-60">Calcul en cours</span>
+              <h3 className="text-4xl md:text-9xl font-display tracking-tighter text-white">
                 {question?.text}
               </h3>
             </motion.div>
@@ -189,7 +189,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-3 md:gap-6">
         {question?.options.map((option, idx) => (
           <motion.button
             key={`${question.id}-${idx}`}
@@ -198,7 +198,7 @@ export const MathGame: React.FC<GameProps> = ({ difficulty, grade, operation, on
             onClick={() => handleAnswer(option)}
             disabled={!!feedback}
             className={`
-              p-6 md:p-8 rounded-xl md:rounded-[2rem] text-2xl md:text-4xl font-display transition-all border
+              p-4 md:p-8 rounded-xl md:rounded-[2rem] text-xl md:text-4xl font-display transition-all border
               ${feedback === 'correct' && option === question.answer ? 'bg-accent/20 text-accent border-accent shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 
                 feedback === 'wrong' && option === question.answer ? 'bg-accent/20 text-accent border-accent' :
                 feedback === 'wrong' && option === (question.options.find(o => o === option)) ? 'bg-rose-500/20 text-rose-500 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.2)]' :

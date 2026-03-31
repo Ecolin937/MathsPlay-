@@ -87,10 +87,10 @@ export const GridGame: React.FC<GridGameProps> = ({ difficulty, grade, operation
         <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/20 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-[0_0_30px_rgba(99,102,241,0.3)] border border-primary/50">
           <Trophy className="w-8 h-8 md:w-12 md:h-12 text-primary" />
         </div>
-        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white">Grille Terminée !</h2>
-        <p className="text-slate-400 mb-6 md:mb-8 text-base md:text-lg">Matrice de données entièrement analysée.</p>
+        <h2 className="text-2xl md:text-4xl font-display mb-2 text-white px-4">Grille Terminée !</h2>
+        <p className="text-slate-400 mb-6 md:mb-8 text-sm md:text-lg px-6">Matrice de données entièrement analysée.</p>
         
-        <div className="glass-card border-primary/20 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 mb-8 md:mb-12 w-full max-w-xs relative overflow-hidden">
+        <div className="glass-card border-primary/20 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 mb-8 md:mb-12 w-[80%] max-w-xs relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary" />
           <p className="text-[10px] md:text-xs text-primary uppercase font-bold tracking-[0.3em] mb-2 md:mb-4">Score Final</p>
           <p className="text-5xl md:text-7xl font-display text-white">{score}</p>
@@ -125,13 +125,13 @@ export const GridGame: React.FC<GridGameProps> = ({ difficulty, grade, operation
         </div>
       </div>
 
-      <div className="glass-card rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border-white/5 mb-6 md:mb-10 text-center relative overflow-hidden">
+      <div className="glass-card rounded-[1.5rem] md:rounded-[2.5rem] p-4 md:p-10 border-white/5 mb-6 md:mb-10 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-accent opacity-50" />
-        <div className="flex items-center justify-center gap-2 md:gap-3 text-slate-500 mb-2 md:mb-4">
-          <Target size={16} className="text-primary md:w-[18px] md:h-[18px]" />
-          <span className="text-[8px] md:text-[10px] uppercase font-bold tracking-[0.3em] md:tracking-[0.4em]">Cible de la Matrice :</span>
+        <div className="flex items-center justify-center gap-2 md:gap-3 text-slate-500 mb-1 md:mb-4">
+          <Target size={14} className="text-primary md:w-[18px] md:h-[18px]" />
+          <span className="text-[8px] md:text-[10px] uppercase font-bold tracking-[0.2em] md:tracking-[0.4em]">Cible de la Matrice :</span>
         </div>
-        <h3 className="text-3xl md:text-5xl font-display text-white mb-4 md:mb-6">{target?.text}</h3>
+        <h3 className="text-2xl md:text-5xl font-display text-white mb-3 md:mb-6">{target?.text}</h3>
         <div className="flex justify-center gap-2 md:gap-3">
           {[1, 2, 3].map(i => (
             <motion.div 
@@ -147,7 +147,7 @@ export const GridGame: React.FC<GridGameProps> = ({ difficulty, grade, operation
         </div>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 md:gap-4">
         {grid.map((val, idx) => (
           <motion.button
             key={`${idx}-${val}`}
@@ -156,7 +156,7 @@ export const GridGame: React.FC<GridGameProps> = ({ difficulty, grade, operation
             onClick={() => val !== '-1' && handlePick(val, idx)}
             disabled={val === '-1'}
             className={`
-              aspect-square rounded-2xl md:rounded-3xl text-xl md:text-3xl font-display transition-all border
+              aspect-square rounded-xl md:rounded-3xl text-lg md:text-3xl font-display transition-all border
               ${val === '-1' 
                 ? 'bg-white/5 border-transparent opacity-20' 
                 : 'glass-card border-white/5 text-white hover:border-primary/50 hover:bg-white/5 shadow-lg'}

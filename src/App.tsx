@@ -260,10 +260,10 @@ export default function App() {
                     <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                     <span className="text-xs font-bold text-primary uppercase tracking-widest">Système d'Apprentissage</span>
                   </motion.div>
-                  <h1 className="text-5xl md:text-9xl font-display mb-8 tracking-tighter leading-[0.85] text-white">
+                  <h1 className="text-5xl md:text-7xl lg:text-9xl font-display mb-8 tracking-tighter leading-[0.85] text-white">
                     Maths <br />
                     <span className="neon-text italic">Interactives</span>
-</h1>
+                  </h1>
                   <p className="text-slate-400 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
                     Maîtrise les concepts complexes avec des défis personnalisés.
                   </p>
@@ -336,7 +336,7 @@ export default function App() {
                     <div className="bg-primary/20 p-2 md:p-3 rounded-xl md:rounded-2xl"><Layout className="w-6 h-6 md:w-7 md:h-7 text-primary animate-pulse" /></div>
                     Interface de Simulation
                   </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-6">
                     {gameStyles.map((style) => (
                       <button
                         key={style.id}
@@ -429,19 +429,19 @@ export default function App() {
                   <div className="text-[8px] md:text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Sélectionne un module</div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                   {/* External Game Button */}
                   <motion.button
                     whileHover={{ y: -10, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleExternalRedirect}
-                    className="group relative bg-indigo-600 p-8 md:p-10 rounded-2xl md:rounded-[3.5rem] shadow-2xl shadow-indigo-500/20 border-none text-left overflow-hidden text-white"
+                    className="group relative bg-indigo-600 p-6 md:p-10 rounded-2xl md:rounded-[3.5rem] shadow-2xl shadow-indigo-500/20 border-none text-left overflow-hidden text-white"
                   >
-                    <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 backdrop-blur-md group-hover:scale-110 transition-transform border border-white/20">
-                      <span className="text-3xl md:text-4xl">🦆</span>
+                    <div className="w-12 h-12 md:w-20 md:h-20 bg-white/10 rounded-xl md:rounded-3xl flex items-center justify-center mb-4 md:mb-8 backdrop-blur-md group-hover:scale-110 transition-transform border border-white/20">
+                      <span className="text-2xl md:text-4xl">🦆</span>
                     </div>
-                    <h3 className="text-xl md:text-2xl font-display mb-2 md:mb-3">Duck Protocol</h3>
-                    <p className="text-indigo-100/60 text-xs md:text-sm mb-6 md:mb-8 leading-relaxed">
+                    <h3 className="text-lg md:text-2xl font-display mb-2 md:mb-3">Duck Protocol</h3>
+                    <p className="text-indigo-100/60 text-[10px] md:text-sm mb-4 md:mb-8 leading-relaxed">
                       Accède à la simulation externe pour un entraînement intensif aux tables de multiplication.
                     </p>
                     <div className="flex items-center gap-3 font-bold text-[10px] md:text-xs uppercase tracking-widest">
@@ -462,12 +462,12 @@ export default function App() {
                       whileHover={{ y: -10, scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => startGame(mode.id as Operation)}
-                      className="group relative glass-card p-8 md:p-10 rounded-2xl md:rounded-[3.5rem] text-left overflow-hidden"
+                      className="group relative glass-card p-6 md:p-10 rounded-2xl md:rounded-[3.5rem] text-left overflow-hidden"
                     >
-                      <div className={`w-12 h-12 md:w-16 md:h-16 ${mode.color} rounded-xl md:rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-lg ${mode.shadow} group-hover:scale-110 transition-transform`}>
-                        <mode.icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                      <div className={`w-10 h-10 md:w-16 md:h-16 ${mode.color} rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-8 shadow-lg ${mode.shadow} group-hover:scale-110 transition-transform`}>
+                        <mode.icon className="w-5 h-5 md:w-8 md:h-8 text-white" />
                       </div>
-                      <h3 className="text-xl md:text-2xl font-display mb-2 md:mb-3 text-white flex items-center gap-2">
+                      <h3 className="text-lg md:text-2xl font-display mb-1 md:mb-3 text-white flex items-center gap-2">
                         {mode.name}
                       </h3>
                       <p className="text-slate-500 text-[10px] md:text-xs leading-relaxed uppercase tracking-wider">

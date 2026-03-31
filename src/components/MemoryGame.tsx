@@ -101,15 +101,15 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
 
   return (
     <div className="min-h-screen p-2 md:p-8 flex flex-col items-center">
-      <div className="w-full max-w-4xl flex items-center justify-between mb-4 md:mb-8">
+      <div className="w-full max-w-4xl flex items-center justify-between mb-4 md:mb-8 px-2">
         <button onClick={onBack} className="p-2 md:p-3 glass rounded-xl md:rounded-2xl hover:bg-white/10 transition-all text-white">
           <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
-        <div className="flex gap-2 md:gap-4">
-          <div className="glass px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-base">
+        <div className="flex gap-1.5 md:gap-4">
+          <div className="glass px-3 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-[10px] md:text-base">
             Coups: {moves}
           </div>
-          <div className="glass px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-sm md:text-base">
+          <div className="glass px-3 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl text-white font-bold text-[10px] md:text-base">
             Paires: {matches}/{pairCount}
           </div>
         </div>
@@ -118,10 +118,10 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
         </button>
       </div>
 
-      <div className={`grid gap-2 md:gap-4 w-full max-w-4xl ${
+      <div className={`grid gap-2 md:gap-4 w-full max-w-4xl px-2 ${
         difficulty === 'easy' ? 'grid-cols-2 sm:grid-cols-4' : 
         difficulty === 'medium' ? 'grid-cols-3 sm:grid-cols-4' : 
-        'grid-cols-4'
+        'grid-cols-3 sm:grid-cols-4'
       }`}>
         {cards.map((card) => (
           <motion.div
@@ -135,12 +135,12 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ difficulty, grade, opera
               card.isFlipped || card.isMatched ? 'rotate-y-180' : ''
             }`}>
               {/* Front */}
-              <div className="absolute inset-0 glass rounded-2xl md:rounded-3xl flex items-center justify-center backface-hidden border-2 border-white/10">
-                <Brain className="w-8 h-8 md:w-12 md:h-12 text-primary/30" />
+              <div className="absolute inset-0 glass rounded-xl md:rounded-3xl flex items-center justify-center backface-hidden border-2 border-white/10">
+                <Brain className="w-6 h-6 md:w-12 md:h-12 text-primary/30" />
               </div>
               {/* Back */}
-              <div className="absolute inset-0 bg-primary/20 backdrop-blur-xl rounded-2xl md:rounded-3xl flex items-center justify-center rotate-y-180 backface-hidden border-2 border-primary/50 p-2 md:p-4 text-center">
-                <span className="text-white font-bold text-sm md:text-xl break-words">{card.content}</span>
+              <div className="absolute inset-0 bg-primary/20 backdrop-blur-xl rounded-xl md:rounded-3xl flex items-center justify-center rotate-y-180 backface-hidden border-2 border-primary/50 p-1 md:p-4 text-center">
+                <span className="text-white font-bold text-[10px] md:text-xl break-words leading-tight">{card.content}</span>
               </div>
             </div>
           </motion.div>
